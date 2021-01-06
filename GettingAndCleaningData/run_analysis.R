@@ -57,12 +57,12 @@ dataset$activity <- activity[dataset$activity, 2]
 names(dataset) <- gsub("\\()", "", names(dataset))
 names(dataset) <- gsub("-mean", "Mean", names(dataset))
 names(dataset) <- gsub("-std", "Std", names(dataset))
-names(dataset) <-gsub("^t", "time", names(dataset))
-names(dataset) <-gsub("^f", "frequency", names(dataset))
-names(dataset) <-gsub("Acc", "Accelerometer", names(dataset))
-names(dataset) <-gsub("Gyro", "Gyroscope", names(dataset))
-names(dataset) <-gsub("Mag", "Magnitude", names(dataset))
-names(dataset) <-gsub("BodyBody", "Body", names(dataset))
+names(dataset) <- gsub("^t", "time", names(dataset))
+names(dataset) <- gsub("^f", "frequency", names(dataset))
+names(dataset) <- gsub("Acc", "Accelerometer", names(dataset))
+names(dataset) <- gsub("Gyro", "Gyroscope", names(dataset))
+names(dataset) <- gsub("Mag", "Magnitude", names(dataset))
+names(dataset) <- gsub("BodyBody", "Body", names(dataset))
 
 # Step 5 =================================
 # From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
