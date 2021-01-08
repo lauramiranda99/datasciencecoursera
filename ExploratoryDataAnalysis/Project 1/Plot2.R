@@ -23,5 +23,5 @@ plot(y = dataset$Global_active_power, x = dataset$dateTime, type = "l",
 
 # Saving to a file
 
-dev.copy(png, file= "Plot2.png", height=480, width=480)
+dev.copy(png, file = "Plot2.png", height = 480, width = 480)
 dev.off()
