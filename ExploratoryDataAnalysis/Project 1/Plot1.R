@@ -24,5 +24,5 @@ hist(dataset$Global_active_power, col = 'red',
 
 ## Saving to a file
 
-dev.copy(png, file= "Plot1.png", height=480, width=480)
+dev.copy(png, file = "Plot1.png", height = 480, width = 480)
 dev.off()
