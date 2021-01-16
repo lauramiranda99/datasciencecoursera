@@ -1,0 +1,129 @@
+---
+title: "Prediction Assignment"
+author: "Laura Miranda"
+date: "15/1/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Introduction
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. 
+
+In this project, the goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. 
+
+More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har
+
+_Packages needed_:
+
+```{r, message=FALSE}
+library(caret)
+library(randomForest)
+```
+
+## Data
+
+```{r, eval=FALSE}
+download.file(url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", 
+                destfile = "train.csv")
+download.file(url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", 
+                destfile = "test.csv")
+
+```
+
+```{r}
+train <- read.csv("C:/Users/Lau/Desktop/Machine learning/train.csv")
+test <- read.csv("C:/Users/Lau/Desktop/Machine learning/test.csv")
+```
+
+### Data cleaning
+
+```{r}
+tail(names(train))
+dim(train)
+dim(test)
+```
+
+First, we will remove columns with near zero variance:
+
+```{r}
+nzv <- nearZeroVar(train, saveMetrics = T)
+keepCol <- row.names(nzv[nzv$nzv == FALSE, ])
+train <- train[, keepCol]
+```
+
+Checking the missing values:
+
+```{r}
+NACol <- colMeans(is.na(train))
+table(NACol)
+```
+
+There are 41 columns in which almost all values are missing. These columns will be removed.
+
+```{r}
+train <- train[, colSums(is.na(train)) == 0]
+dim(train)
+```
+
+We are left with 59 columns, but the first seven are descriptive and are not useful to train the model, so they will be removed aswell.
+
+```{r}
+train <- train[, c(7:59)]
+```
+
+Now, we will split the data into a 70% training and 30% testing set. We will use cross validation in `trainData` to improve the model and `testData` will be used for our out-of-sample error rate.
+
+```{r}
+set.seed(1234)
+Training <- createDataPartition(y = train$classe, p = 0.7, list = F)
+trainData <- train[Training, ]
+testData <- train[-Training, ]
+
+dim(trainData)
+dim(testData)
+```
+
+## Prediction model:
+
+We will include a 5-fold cross validation
+
+```{r}
+control <- trainControl(method = 'cv', number = 5)
+```
+
+Fitting a model with random forests:
+
+```{r, cache=TRUE}
+model <- train(classe ~ ., method = "rf", data = trainData, trControl = control)
+```
+
+Summary of the model:
+
+```{r}
+model$finalModel
+```
+
+## Prediction with the testing set:
+
+```{r}
+pred <- predict(model, testData)
+confusionMatrix(pred, as.factor(testData$classe))$table
+```
+
+Checking the accuracy with the confusion matrix:
+
+```{r}
+confusionMatrix(pred, as.factor(testData$classe))
+```
+
+The accuracy is 99.38% under 5-fold cross validation
+
+Finally, we can apply our model to predict, for the twenty observations in the original testing dataset.
+
+```{r}
+# Predict on test dataset
+newPred <- predict(model, test)
+newPred
+```
